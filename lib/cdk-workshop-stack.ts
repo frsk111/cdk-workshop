@@ -1,7 +1,8 @@
 import { aws_apigateway, aws_lambda, aws_lambda_nodejs, Duration, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
+import { HitCounter } from './hitcounter';
 
-export class CdkWorkshopStack extends Stack {
+export class CdkWorkshopStackHitCounter extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
     
@@ -11,9 +12,16 @@ export class CdkWorkshopStack extends Stack {
       handler: 'handler'
     })
 
-    new aws_apigateway.LambdaRestApi(this,'Endpoint',{
-      handler: hello
+    //istanziamo il costrutto HitCounter
+    const helloWithCounter = new HitCounter(this, 'HelloHitCounter',{
+      downstream: hello
     })
+
+    new aws_apigateway.LambdaRestApi(this,'Endpoint',{
+      handler: helloWithCounter.handler
+    })
+
+
 
   }
 }
